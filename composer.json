@@ -1,0 +1,12 @@
+{
+    "name": "ashon-ikon/random-lat-long",
+    "description": "This is simple PHP random latitude and longitude generator",
+    "license": "zLib",
+    "authors": [
+        {
+            "name": "Ashon Yinka",
+            "email": "gigalimit20@yahoo.com"
+        }
+    ],
+    "require": {}
+}
