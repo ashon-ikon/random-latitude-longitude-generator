@@ -28,6 +28,8 @@
  */
 namespace RandomLatLong;
 
+use RandomLatLong\Artifact\GeneratorException;
+
 class Generator {
     
     
@@ -73,15 +75,15 @@ class Generator {
     /**
      * Creates a polygon that stems from the latitude and longitude provided
      * 
-     * @param integer $lat
-     * @param integer $long
-     * @param integer $maxRadius
-     * @param integer $verts
-     * @param boolean $openEnded
+     * @param integer $lat          Reference latitude in degrees
+     * @param integer $long         Reference longitude in degrees
+     * @param integer $maxRadius    Units away from the reference cordinates
+     * @param integer $verts        Number of vertices required
+     * @param boolean $openEnded    If true, the polygon is not closed
      * 
      * @return array List of polygon points
      */
-    public function makePolygon($lat, $long, $maxRadius, $verts = 4, $openEnded = false)
+    public function makePolygon($lat, $long, $maxRadius = 1, $verts = 4, $openEnded = false)
     {
         
         /* Ensure the vertices are more than 1 */
@@ -89,13 +91,18 @@ class Generator {
             throw new GeneratorException("The number of vertices specified is too low", GeneratorException::ERR_TOO_FEW_VERTICES);
         }
         
-        $theta = 360 / ($openEnded ? ($verts + 1) : $verts);
-        
+        $theta        = 360 / ($openEnded ? ($verts + 1) : $verts);
+        $currentAngle = 0;
+        $points       = [];
+        $collection   =  new Artifact\Collection();
         /* We are going to generate these point clockwise */
         for ($p = 1; $p <= $verts; $p++) {
-            
-            
+            $currentAngle += $theta;
+            $newLng     = $long + (cos($currentAngle) * $maxRadius);
+            $newLat     = $long + (sin($currentAngle) * $maxRadius);
+            $collection->add(new Artifact\Location($newLat, $newLng));
         }
-        return []; 
+        return $collection;
     }
+
 }
