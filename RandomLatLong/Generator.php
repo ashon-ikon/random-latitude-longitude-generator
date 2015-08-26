@@ -28,7 +28,14 @@
  */
 namespace RandomLatLong;
 
+use RandomLatLong\Artifact\Collection;
 use RandomLatLong\Artifact\GeneratorException;
+use RandomLatLong\Artifact\Location;
+
+
+/**
+ * @method Collection makePolygon(t$lat, $long, $maxRadius = 1, $verts = 4, $openEnded = false) Makes polygon
+ */
 
 class Generator {
     
@@ -71,38 +78,17 @@ class Generator {
      | Main functionalities
      | -------------------------------------------------------------
      */
-    
-    /**
-     * Creates a polygon that stems from the latitude and longitude provided
-     * 
-     * @param integer $lat          Reference latitude in degrees
-     * @param integer $long         Reference longitude in degrees
-     * @param integer $maxRadius    Units away from the reference cordinates
-     * @param integer $verts        Number of vertices required
-     * @param boolean $openEnded    If true, the polygon is not closed
-     * 
-     * @return array List of polygon points
-     */
-    public function makePolygon($lat, $long, $maxRadius = 1, $verts = 4, $openEnded = false)
-    {
-        
-        /* Ensure the vertices are more than 1 */
-        if ($verts < 2) {
-            throw new GeneratorException("The number of vertices specified is too low", GeneratorException::ERR_TOO_FEW_VERTICES);
+    public function __call($name, $arguments) {
+        if (false !== strpos($name, 'make')) {
+            // Attempt to call the method
+            $class = ucfirst(substr($name, 4));
+            $classPath = __NAMESPACE__ . "\\Entity\\{$class}";
+            $object = new $classPath();
+            return call_user_method_array($name, $object, $arguments);
+            
+        } else {
+            throw new GeneratorException(sprintf("Unknown method called! '%s'", (string) $name));
         }
-        
-        $theta        = 360 / ($openEnded ? ($verts + 1) : $verts);
-        $currentAngle = 0;
-        $points       = [];
-        $collection   =  new Artifact\Collection();
-        /* We are going to generate these point clockwise */
-        for ($p = 1; $p <= $verts; $p++) {
-            $currentAngle += $theta;
-            $newLng     = $long + (cos($currentAngle) * $maxRadius);
-            $newLat     = $long + (sin($currentAngle) * $maxRadius);
-            $collection->add(new Artifact\Location($newLat, $newLng));
-        }
-        return $collection;
     }
 
 }

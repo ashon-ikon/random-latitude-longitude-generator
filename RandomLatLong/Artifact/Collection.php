@@ -2,7 +2,7 @@
 /**
  * @package     Random Latitude Longitude
  * @author      Ashon <gigalimit20@yahoo.com>
- * @created     19-Aug-2015
+ * @created     21-Aug-2015
  *
  *   Zlib License
  *
@@ -26,40 +26,41 @@
  *  http://www.gzip.org/zlib/zlib_license.html
  *
  */
+namespace RandomLatLong\Artifact;
 
-namespace Tests\RandomLatLong;
-
-use RandomLatLong\Entity\Polygon;
-use RandomLatLong\Generator;
-use Tests\TestAbstract;
-
-class TestGenerator extends TestAbstract {
-
-    public function testMakingPolygonsWithDefaultValues() {
-        $gen          = Generator::getInstance();
-        $lat          = 101.428;
-        $long         = -23.140;
-        $maxRadius    = 2;
-        $defaultVerts = 4;
-        $collection   = $gen->makePolygon($lat, $long, $maxRadius);
-
-        $this->assertEquals($defaultVerts, $collection->size(), 'Polygon vertices is NOT correct');
+class Collection extends \ArrayIterator {
+    
+    protected $list     = [];
+    
+    /**
+     * Adds a new collection
+     * @param \RandomLatLong\Artifact\Location $loc
+     * @return \RandomLatLong\Artifact\Collection
+     */
+    public function add(Location $loc) {
+        $this->list[md5(time() + count($this->list))] = $loc;
+        return $this;
     }
     
     /**
-     * Tests that the vertices make a valid clockwise polygon
+     * Size of collection
+     * @return integer
      */
-    public function testMakingPolygonsGeneratedAreClockwise() {
-        $gen          = Generator::getInstance();
-        $lat          = 101.428;
-        $long         = -23.140;
-        $maxRadius    = 1;
-        $defaultVerts = 2;
-        $collection   = $gen->makePolygon($lat, $long, $maxRadius, $defaultVerts);
-        
-        $this->assertTrue(0 > Polygon::getRotationMetrics($collection), 'Polygon generated is NOT clockwise');
+    public function size() {
+        return count($this->list);
     }
     
+    /**
+     * Gets all locations
+     * @return array List of lcations
+     */
+    public function getAll() {
+        return $this->list;
+    }
     
-
+    public function getLocationsAsGeoCollection()
+    {
+        
+    }
+    
 }
