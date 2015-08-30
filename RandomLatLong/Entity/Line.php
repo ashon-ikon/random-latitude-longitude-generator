@@ -2,7 +2,7 @@
 /**
  * @package     Random Latitude Longitude
  * @author      Ashon <gigalimit20@yahoo.com>
- * @created     19-Aug-2015
+ * @created     26-Aug-2015
  * 
  *   Zlib License
  * 
@@ -26,13 +26,22 @@
  *  http://www.gzip.org/zlib/zlib_license.html
  * 
  */
-namespace RandomLatLong;
 
-/**
- * Description of GeneratorException
- *
- * @author yinka
- */
-class GeneratorException extends \Exception {
-    const ERR_TOO_FEW_VERTICES  = 0x005;
+namespace RandomLatLong\Entity;
+
+use RandomLatLong\Artifact\Collection;
+use RandomLatLong\Artifact\Location;
+
+class Line extends Geometry {
+    /**
+     * Creates line
+     * @param float $latitude
+     * @param float $longitude
+     */
+    public function makeLine($latitude = 0.0, $longitude = 0.0) {
+        $this->setCollections(new Collection([
+            new Location($latitude, $longitude),
+            new Location(mt_rand(0, $latitude), mt_rand(0, $longitude)),
+        ]));
+    }
 }

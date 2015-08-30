@@ -28,6 +28,15 @@
  */
 namespace RandomLatLong;
 
+use RandomLatLong\Artifact\Collection;
+use RandomLatLong\Artifact\GeneratorException;
+use RandomLatLong\Artifact\Location;
+
+
+/**
+ * @method Collection makePolygon(t$lat, $long, $maxRadius = 1, $verts = 4, $openEnded = false) Makes polygon
+ */
+
 class Generator {
     
     
@@ -69,33 +78,17 @@ class Generator {
      | Main functionalities
      | -------------------------------------------------------------
      */
-    
-    /**
-     * Creates a polygon that stems from the latitude and longitude provided
-     * 
-     * @param integer $lat
-     * @param integer $long
-     * @param integer $maxRadius
-     * @param integer $verts
-     * @param boolean $openEnded
-     * 
-     * @return array List of polygon points
-     */
-    public function makePolygon($lat, $long, $maxRadius, $verts = 4, $openEnded = false)
-    {
-        
-        /* Ensure the vertices are more than 1 */
-        if ($verts < 2) {
-            throw new GeneratorException("The number of vertices specified is too low", GeneratorException::ERR_TOO_FEW_VERTICES);
-        }
-        
-        $theta = 360 / ($openEnded ? ($verts + 1) : $verts);
-        
-        /* We are going to generate these point clockwise */
-        for ($p = 1; $p <= $verts; $p++) {
+    public function __call($name, $arguments) {
+        if (false !== strpos($name, 'make')) {
+            // Attempt to call the method
+            $class = ucfirst(substr($name, 4));
+            $classPath = __NAMESPACE__ . "\\Entity\\{$class}";
+            $object = new $classPath();
+            return call_user_method_array($name, $object, $arguments);
             
-            
+        } else {
+            throw new GeneratorException(sprintf("Unknown method called! '%s'", (string) $name));
         }
-        return []; 
     }
+
 }
